@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:batch="http://www.springframework.org/schema/batch"
+    xmlns:beans="http://www.springframework.org/schema/beans"
+    xsi:schemaLocation="
+    http://www.springframework.org/schema/batch http://www.springframework.org/schema/batch/spring-batch-3.0.xsd
+    http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
+
+
+    <batch:job id="stockInfoJob">
+        <batch:step id="getStockInfoStep">
+            <batch:tasklet ref="getStockInfoTask" />
+            <batch:end on="*" />
+        </batch:step>
+    </batch:job>
+
+
+    <batch:job id="stockInfoLoaderJob">
+        <batch:step id="getStockInfoListStep">
+            <batch:tasklet transaction-manager="transactionManager"
+                start-limit="100">
+                <batch:chunk reader="multiResourceReader"
+                    writer="stockInfoWriter" commit-interval="2000"
+                    processor="stockInfoFileReadProcessor" skip-limit="1000000">
+                    <batch:skippable-exception-classes>
+                        <batch:include
+                            class="com.ciservice.app.common.exception.SystemErrorException" />
+                        <batch:include
+                            class="org.springframework.batch.item.file.FlatFileParseException" />
+                    </batch:skippable-exception-classes>
+                </batch:chunk>
+                <batch:listeners>
+                    <batch:listener ref="stepListener" />
+                </batch:listeners>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+
+    <batch:job id="stockInfoUpdateJob">
+        <batch:step id="setResultStep">
+            <batch:tasklet transaction-manager="transactionManager"
+                start-limit="100">
+                <batch:chunk reader="nonResultStockInfoReader"
+                    writer="stockInfoWriter" commit-interval="1"
+                    processor="addDayRsltProcessor">
+                </batch:chunk>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+    <batch:job id="stockInfoReUpdateJob">
+        <batch:step id="reSetResultStep">
+            <batch:tasklet transaction-manager="transactionManager"
+                start-limit="100">
+                <batch:chunk reader="reNonResultStockInfoReader"
+                    writer="stockInfoWriter" commit-interval="1"
+                    processor="addDayRsltProcessor">
+                </batch:chunk>
+            </batch:tasklet>
+        </batch:step>
+    </batch:job>
+
+
+    <beans:bean id="getStockInfoTask"
+        class="com.ciservice.app.batch.tasklet.StockInfoTask" />
+
+
+    <beans:bean id="multiResourceReader"
+        class="org.springframework.batch.item.file.MultiResourceItemReader">
+        <beans:property name="delegate" ref="flatFileItemReaderPrice" />
+    </beans:bean>
+
+    <beans:bean id="stepListener"
+        class="com.ciservice.app.common.file.common.StepListener">
+        <beans:property name="filePattern"
+            value="${common.path.stockpricespath}" />
+    </beans:bean>
+
+    <beans:bean id="flatFileItemReaderPrice"
+        class="org.springframework.batch.item.file.FlatFileItemReader">
+
+
+        <beans:property name="encoding" value="windows-31j" />
+
+        <beans:property name="linesToSkip" value="1" />
+
+        <beans:property name="lineMapper">
+            <beans:bean
+                class="org.springframework.batch.item.file.mapping.DefaultLineMapper">
+
+                <beans:property name="lineTokenizer">
+                    <beans:bean
+                        class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
+                        <beans:property name="names"
+                            value="sc, name, business, marcket, date, fixedPrice, dayBeforeDiff, dayBeforeRatio, dayBeforePrice, openPrice, highPrice, lowPrice, volume, tradingValue, marketCapt, widthLowLmt, widthHighLmt" />
+                    </beans:bean>
+                </beans:property>
+                <beans:property name="fieldSetMapper">
+                    <beans:bean
+                        class="com.ciservice.app.common.file.map.MapStockPrices">
+                    </beans:bean>
+                </beans:property>
+            </beans:bean>
+        </beans:property>
+
+    </beans:bean>
+
+</beans>
