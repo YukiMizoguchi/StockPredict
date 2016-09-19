@@ -2,6 +2,8 @@ package com.ciservice.app.batch.processor;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.batch.item.ItemProcessor;
@@ -22,7 +24,7 @@ import com.ciservice.app.common.util.CommonUtil;
  *
  */
 @Component("addDayRsltProcessor")
-public class AddDayResultProcessor implements ItemProcessor<StockInfo, StockInfo> {
+public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<StockInfo>> {
 
   protected static Logger logger = Logger.getLogger(AddDayResultProcessor.class);
 
@@ -35,84 +37,92 @@ public class AddDayResultProcessor implements ItemProcessor<StockInfo, StockInfo
    * @see org.springframework.batch.item.ItemProcessor#process(java.lang.Object)
    */
   @Override
-  public StockInfo process(StockInfo item) throws Exception {
+  public Set<StockInfo> process(Set<StockInfo> item) throws Exception {
 
-    // 入力データチェック
-    if (item.getSc() == null) {
-      return null;
-    }
+    final Set<StockInfo> stockInfoSet = new HashSet<>();
 
-    if (item.getSavedDate() == null) {
-      return null;
-    }
+    for (final StockInfo stockInfo : item) {
 
-    if (item.getFixedPrice() == null) {
-      return null;
-    }
-
-    final double targetPrice = item.getFixedPrice();
-
-    final Date savedDateDay = cmnUtil.getSavedDate(item.getSavedDate());
-
-    // DB使用定義
-    ApplicationContext ctxStockInfoRef =
-        new GenericXmlApplicationContext(SGConst.PROPERTIES_MONGPDB_BEAN_XML);
-    StockInfoRepository stockInfoRepos = ctxStockInfoRef.getBean(StockInfoRepository.class);
-
-    final StockInfo stockInfo = item;
-    int intCnt = 1;
-
-    try {
-
-      while (stockInfo.getRsltDay() == null && intCnt < 4) {
-        intCnt++;
-
-        // 前日を算出する
-        final Calendar calendar = Calendar.getInstance();
-        calendar.setTime(savedDateDay);
-        calendar.add(Calendar.DAY_OF_MONTH, -1);
-        final String targetDate = cmnUtil.getSavedDate(calendar.getTime());
-
-        final StockInfo stockInfoRef =
-            stockInfoRepos.findOneByScAndSavedDate(item.getSc(), targetDate);
-
-        // 対象日の情報が取得できない場合、ループを継続
-        if (stockInfoRef == null) {
-          continue;
-        }
-
-        // 価格が取得できない場合
-        if (stockInfoRef.getFixedPrice() == null) {
-          throw new SystemErrorException("価格が取得できない");
-        }
-
-        final double prePice = stockInfoRef.getFixedPrice();
-
-        if (targetPrice > prePice) {
-          // ターゲット価格が前日より高い
-          stockInfo.setRsltDay(PredictResult.UP);
-        } else if (targetPrice < prePice) {
-          // ターゲット価格が前日より低い
-          stockInfo.setRsltDay(PredictResult.DOWN);
-        } else {
-          // ターゲット価格が変化なし
-          stockInfo.setRsltDay(PredictResult.KEEP);
-        }
-
+      // 入力データチェック
+      if (stockInfo.getSc() == null) {
+        return null;
       }
 
-    } catch (Exception exception) {
-      throw new SystemErrorException("DBエラー発生（参照）", exception);
-    } finally {
-      ((ConfigurableApplicationContext) ctxStockInfoRef).close();
+      if (stockInfo.getSavedDate() == null) {
+        return null;
+      }
+
+      if (stockInfo.getFixedPrice() == null) {
+        return null;
+      }
+
+      final double targetPrice = stockInfo.getFixedPrice();
+
+      final Date savedDateDay = cmnUtil.getSavedDate(stockInfo.getSavedDate());
+
+      // DB使用定義
+      ApplicationContext ctxStockInfoRef =
+          new GenericXmlApplicationContext(SGConst.PROPERTIES_MONGPDB_BEAN_XML);
+      StockInfoRepository stockInfoRepos = ctxStockInfoRef.getBean(StockInfoRepository.class);
+
+      int intCnt = 1;
+
+      try {
+
+        while (stockInfo.getRsltDay() == null && intCnt < 4) {
+          intCnt++;
+
+          // 前日を算出する
+          final Calendar calendar = Calendar.getInstance();
+          calendar.setTime(savedDateDay);
+          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          final String targetDate = cmnUtil.getSavedDate(calendar.getTime());
+
+          final StockInfo stockInfoRef =
+              stockInfoRepos.findOneByScAndSavedDate(stockInfo.getSc(), targetDate);
+
+          // 対象日の情報が取得できない場合、ループを継続
+          if (stockInfoRef == null) {
+            continue;
+          }
+
+          // 価格が取得できない場合
+          if (stockInfoRef.getFixedPrice() == null) {
+            throw new SystemErrorException("価格が取得できない");
+          }
+
+          final double prePice = stockInfoRef.getFixedPrice();
+
+          if (targetPrice > prePice) {
+            // ターゲット価格が前日より高い
+            stockInfo.setRsltDay(PredictResult.UP);
+          } else if (targetPrice < prePice) {
+            // ターゲット価格が前日より低い
+            stockInfo.setRsltDay(PredictResult.DOWN);
+          } else {
+            // ターゲット価格が変化なし
+            stockInfo.setRsltDay(PredictResult.KEEP);
+          }
+
+        }
+
+
+      } catch (Exception exception) {
+        throw new SystemErrorException("DBエラー発生（参照）", exception);
+      } finally {
+        ((ConfigurableApplicationContext) ctxStockInfoRef).close();
+      }
+
+      // 対象日の情報が取得できなかった場合チェック日時を付与
+      if (stockInfo.getRsltDay() == null) {
+        stockInfo.setRsltDayChkDate(new Date());
+      }
+
+      stockInfoSet.add(stockInfo);
+
     }
 
-    // 対象日の情報が取得できなかった場合チェック日時を付与
-    if (stockInfo.getRsltDay() == null) {
-      stockInfo.setRsltDayChkDate(new Date());
-    }
-
-    return stockInfo;
+    return stockInfoSet;
 
   }
 

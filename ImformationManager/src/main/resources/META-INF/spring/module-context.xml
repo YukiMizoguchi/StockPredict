@@ -42,7 +42,7 @@
             <batch:tasklet transaction-manager="transactionManager"
                 start-limit="100">
                 <batch:chunk reader="nonResultStockInfoReader"
-                    writer="stockInfoWriter" commit-interval="1"
+                    writer="stockInfoListWriter" commit-interval="1"
                     processor="addDayRsltProcessor">
                 </batch:chunk>
             </batch:tasklet>
