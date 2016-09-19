@@ -1,6 +1,7 @@
 package com.ciservice.app.batch.writer;
 
 import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.batch.item.ItemWriter;
@@ -18,7 +19,7 @@ import com.ciservice.app.common.exception.SystemErrorException;
  * Dummy {@link ItemWriter} which only logs data it receives.
  */
 @Component("stockInfoListWriter")
-public class StockInfoListWriter implements ItemWriter<List<StockInfo>> {
+public class StockInfoListWriter implements ItemWriter<Set<StockInfo>> {
 
   protected static Logger logger = Logger.getLogger(StockInfoListWriter.class);
 
@@ -28,13 +29,13 @@ public class StockInfoListWriter implements ItemWriter<List<StockInfo>> {
    * @see org.springframework.batch.item.ItemWriter#write(java.util.List)
    */
   @Override
-  public void write(List<? extends List<StockInfo>> items) throws Exception {
+  public void write(List<? extends Set<StockInfo>> items) throws Exception {
 
 
     /************************************************************
      * インプットデータ分繰り返し
      ************************************************************/
-    for (final List<StockInfo> stockInfos : items) {
+    for (final Set<StockInfo> stockInfos : items) {
 
       /************************************************************
        * StockInfo格納

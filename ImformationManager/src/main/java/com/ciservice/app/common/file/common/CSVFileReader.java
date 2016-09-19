@@ -1,6 +1,6 @@
 package com.ciservice.app.common.file.common;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  * @author YukiMizoguchi
@@ -8,6 +8,6 @@ import java.util.List;
  */
 public interface CSVFileReader<T> {
 
-  public List<T> read(String fileName);
+  public Set<T> read(String fileName);
 
 }

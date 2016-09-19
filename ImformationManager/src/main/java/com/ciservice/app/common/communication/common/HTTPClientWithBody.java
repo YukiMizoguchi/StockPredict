@@ -4,9 +4,9 @@ import java.util.Set;
 
 import org.springframework.http.ResponseEntity;
 
-public interface HTTPClient<E> {
+public interface HTTPClientWithBody<E1, E2> {
 
-  Set<E> getData();
+  Set<E1> getData(E2 obj);
 
   ResponseEntity<String> getResponceEntity();
 

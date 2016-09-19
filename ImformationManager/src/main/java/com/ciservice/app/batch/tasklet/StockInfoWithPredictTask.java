@@ -22,9 +22,9 @@ import com.ciservice.app.common.dto.StockInfoSetDTO;
  * @author YukiMizoguchi
  *
  */
-public class StockInfoTask implements Tasklet {
+public class StockInfoWithPredictTask implements Tasklet {
 
-  protected static Logger logger = Logger.getLogger(StockInfoTask.class);
+  protected static Logger logger = Logger.getLogger(StockInfoWithPredictTask.class);
 
 
   @Autowired
@@ -34,6 +34,10 @@ public class StockInfoTask implements Tasklet {
   @Autowired
   @Qualifier("stockInfoProcessor")
   private ItemProcessor<StockInfoSetDTO, Set<StockInfo>> processData;
+
+  @Autowired
+  @Qualifier("predictProcessor")
+  private ItemProcessor<Set<StockInfo>, Set<StockInfo>> predictData;
 
   @Autowired
   @Qualifier("stockInfoListWriter")
@@ -55,10 +59,14 @@ public class StockInfoTask implements Tasklet {
 
     // 取得情報の加工
     // （情報の結合、変換など）
-    final Set<StockInfo> stockInfoSet = processData.process(stockInfoSetDTO);
+    final Set<StockInfo> StockInfos = processData.process(stockInfoSetDTO);
+
+    // AI(Tensorflow)による予測
+    final Set<StockInfo> preStockInfos = predictData.process(StockInfos);
+
     // SetからListへ変換
     final List<Set<StockInfo>> stockInfoList = new ArrayList<>();
-    stockInfoList.add(stockInfoSet);
+    stockInfoList.add(preStockInfos);
 
     // DBへの書き込み
     writeData.write(stockInfoList);

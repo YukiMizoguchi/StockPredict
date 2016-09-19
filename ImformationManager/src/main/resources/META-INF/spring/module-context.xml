@@ -61,9 +61,19 @@
         </batch:step>
     </batch:job>
 
+    <batch:job id="predictJob">
+        <batch:step id="predictStep">
+            <batch:tasklet ref="predictStockInfoTask" />
+            <batch:end on="*" />
+        </batch:step>
+    </batch:job>
+
 
     <beans:bean id="getStockInfoTask"
         class="com.ciservice.app.batch.tasklet.StockInfoTask" />
+
+    <beans:bean id="predictStockInfoTask"
+        class="com.ciservice.app.batch.tasklet.StockInfoWithPredictTask" />
 
 
     <beans:bean id="multiResourceReader"

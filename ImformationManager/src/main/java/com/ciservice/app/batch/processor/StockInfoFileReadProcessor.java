@@ -1,6 +1,6 @@
 package com.ciservice.app.batch.processor;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.batch.item.ItemProcessor;
@@ -47,7 +47,7 @@ public class StockInfoFileReadProcessor implements ItemProcessor<StockPriceDTO, 
 
     final String filePath = getFailePath(dataPath, savedDate, dataExt);
 
-    final List<StockDataDTO> stockDataDTOs = stockDataCSVReader.read(filePath);
+    final Set<StockDataDTO> stockDataDTOs = stockDataCSVReader.read(filePath);
 
 
     StockInfo stockInfo = null;

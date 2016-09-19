@@ -1,6 +1,6 @@
 package com.ciservice.app.common.dto;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -12,36 +12,36 @@ public class StockInfoSetDTO {
 
   protected static Logger logger = Logger.getLogger(StockInfoSetDTO.class);
 
-  private List<StockPriceDTO> stockPriceList;
+  private Set<StockPriceDTO> stockPriceSet;
 
-  private List<StockDataDTO> stockDataList;
+  private Set<StockDataDTO> stockDataSet;
 
   /**
-   * @return stockPriceList
+   * @return stockPriceSet
    */
-  public List<StockPriceDTO> getStockPriceList() {
-    return stockPriceList;
+  public Set<StockPriceDTO> getStockPriceSet() {
+    return stockPriceSet;
   }
 
   /**
-   * @param stockPriceList セットする stockPriceList
+   * @param stockPriceSet セットする stockPriceSet
    */
-  public void setStockPriceList(List<StockPriceDTO> stockPriceList) {
-    this.stockPriceList = stockPriceList;
+  public void setStockPriceSet(Set<StockPriceDTO> stockPriceSet) {
+    this.stockPriceSet = stockPriceSet;
   }
 
   /**
-   * @return stockDataList
+   * @return stockDataSet
    */
-  public List<StockDataDTO> getStockDataList() {
-    return stockDataList;
+  public Set<StockDataDTO> getStockDataSet() {
+    return stockDataSet;
   }
 
   /**
-   * @param stockDataList セットする stockDataList
+   * @param stockDataSet セットする stockDataSet
    */
-  public void setStockDataList(List<StockDataDTO> stockDataList) {
-    this.stockDataList = stockDataList;
+  public void setStockDataSet(Set<StockDataDTO> stockDataSet) {
+    this.stockDataSet = stockDataSet;
   }
 
   /*
@@ -51,7 +51,7 @@ public class StockInfoSetDTO {
    */
   @Override
   public String toString() {
-    return "StockInfoSetDTO [stockPriceList=" + stockPriceList + ", stockDataList=" + stockDataList
+    return "StockInfoSetDTO [stockPriceSet=" + stockPriceSet + ", stockDataSet=" + stockDataSet
         + "]";
   }
 

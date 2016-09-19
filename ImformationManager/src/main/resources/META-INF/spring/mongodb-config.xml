@@ -7,7 +7,7 @@
     http://www.springframework.org/schema/data/mongo/spring-mongo-1.8.xsd">
 
     <mongo:mongo id="mongo" />
-    <mongo:mongo host="192.168.2.104" port="27017" />
+    <mongo:mongo host="36.55.234.54" port="17071" />
     <mongo:db-factory dbname="stock" />
 
 

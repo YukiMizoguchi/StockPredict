@@ -1,6 +1,6 @@
 package com.ciservice.app.batch.reader;
 
-import java.util.List;
+import java.util.Set;
 
 import org.springframework.batch.item.ItemReader;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,12 +35,12 @@ public class StockInfoReader implements ItemReader<StockInfoSetDTO> {
     final StockInfoSetDTO stockInfoSetDTO = new StockInfoSetDTO();
 
     // 価格取得
-    final List<StockPriceDTO> stockPriceList = clientPrices.getData();
-    stockInfoSetDTO.setStockPriceList(stockPriceList);
+    final Set<StockPriceDTO> stockPriceSet = clientPrices.getData();
+    stockInfoSetDTO.setStockPriceSet(stockPriceSet);
 
     // 株情報取得
-    final List<StockDataDTO> stockDataList = clientData.getData();
-    stockInfoSetDTO.setStockDataList(stockDataList);
+    final Set<StockDataDTO> stockDataSet = clientData.getData();
+    stockInfoSetDTO.setStockDataSet(stockDataSet);
 
     return stockInfoSetDTO;
 

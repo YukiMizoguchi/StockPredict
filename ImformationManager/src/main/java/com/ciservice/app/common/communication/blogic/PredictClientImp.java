@@ -2,6 +2,7 @@ package com.ciservice.app.common.communication.blogic;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
@@ -13,13 +14,14 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.ciservice.app.common.communication.common.HTTPClient;
+import com.ciservice.app.common.communication.common.HTTPClientWithBody;
 import com.ciservice.app.common.communication.common.RestClient;
-import com.ciservice.app.common.dto.StockPriceDTO;
+import com.ciservice.app.common.db.mongodb.doc.StockInfo;
 import com.ciservice.app.common.exception.SystemErrorException;
-import com.ciservice.app.common.json.map.MapStockPrices;
-import com.ciservice.app.common.json.pojo.StockPrices;
+import com.ciservice.app.common.json.pojo.PredictedStockInfo;
+import com.ciservice.app.common.map.MapData;
 import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,49 +30,65 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author YukiMizoguchi
  *
  */
-@Service("stockPricesClient")
-public class StockPricesClientImp implements HTTPClient<StockPriceDTO> {
+@Service("predictClient")
+public class PredictClientImp implements HTTPClientWithBody<StockInfo, Set<StockInfo>> {
 
-  protected static Logger logger = Logger.getLogger(StockPricesClientImp.class);
+  protected static Logger logger = Logger.getLogger(PredictClientImp.class);
 
-  @Value("${common.url.stockprices}")
+  @Value("${common.url.predict}")
   private String uri;
 
   private ResponseEntity<String> responceEntity;
-
-  private Set<StockPriceDTO> stockPriceDataSet = new HashSet<StockPriceDTO>();
 
   @Autowired
   @Qualifier("restClient")
   private RestClient restClient;
 
   @Autowired
-  @Qualifier("mapStockPrices")
-  private MapStockPrices mapStockPrice;
+  @Qualifier("mapPredict")
+  private MapData<Set<StockInfo>, Set<PredictedStockInfo>, Set<StockInfo>> mapPredict;
 
   /*
    * (非 Javadoc)
    *
-   * @see com.ciservice.app.common.communication.HTTPClient#getData()
+   * @see com.ciservice.app.common.communication.common.HTTPClientWithBody#getData(java.lang.Object)
    */
   @Override
-  public Set<StockPriceDTO> getData() {
+  public Set<StockInfo> getData(Set<StockInfo> stockInfos) {
 
+    Set<StockInfo> predictedStockInfos;
+
+    // リクエストヘッダの設定
     final HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
     headers.add("Accept", "*/*");
 
-    final HttpEntity<String> requestEntity = new HttpEntity<String>("", headers);
 
-    this.setResponceEntity(restClient.get(uri, requestEntity));
+    // Body部生成
+    final ObjectMapper mapperReq = new ObjectMapper();
 
-    final ObjectMapper mapper = new ObjectMapper();
+    String reqBodyJson;
+    try {
+      reqBodyJson = mapperReq.writeValueAsString(stockInfos);
+
+      final HttpEntity<String> requestEntity = new HttpEntity<String>(reqBodyJson, headers);
+
+      this.setResponceEntity(restClient.post(uri, requestEntity));
+
+    } catch (JsonProcessingException jsonProcessingException) {
+      throw new SystemErrorException("IM8999:内部矛盾発生（Json変換失敗）", jsonProcessingException);
+    }
+
 
     try {
-      final StockPrices stockPriceSet =
-          mapper.readValue(responceEntity.getBody(), new TypeReference<StockPrices>() {});
 
-      this.stockPriceDataSet = mapStockPrice.mapping(stockPriceSet);
+      final List<PredictedStockInfo> result = new ObjectMapper().readValue(responceEntity.getBody(),
+          new TypeReference<List<PredictedStockInfo>>() {});
+
+      final Set<PredictedStockInfo> resultSet = new HashSet<PredictedStockInfo>(result);
+
+      predictedStockInfos = mapPredict.map(stockInfos, resultSet);
+      // predictedStockInfos = resultSet;
 
     } catch (JsonParseException jsonParseException) {
       throw new SystemErrorException("IM4001:外部通信エラー発生（ボディ形式不正）", jsonParseException);
@@ -80,7 +98,7 @@ public class StockPricesClientImp implements HTTPClient<StockPriceDTO> {
       throw new SystemErrorException("IM4001:外部通信エラー発生（ボディ形式不正）", ioException);
     }
 
-    return this.stockPriceDataSet;
+    return predictedStockInfos;
 
   }
 
@@ -89,7 +107,6 @@ public class StockPricesClientImp implements HTTPClient<StockPriceDTO> {
    *
    * @see com.ciservice.app.common.communication.HTTPClient#getResponceEntity()
    */
-  @Override
   public ResponseEntity<String> getResponceEntity() {
     return responceEntity;
   }

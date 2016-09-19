@@ -1,8 +1,8 @@
 package com.ciservice.app.common.communication.blogic;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class StockDataClientImp implements HTTPClient<StockDataDTO> {
 
   private ResponseEntity<String> responceEntity;
 
-  private List<StockDataDTO> stockPriceDataList = new ArrayList<StockDataDTO>();
+  private Set<StockDataDTO> stockPriceDataSet = new HashSet<StockDataDTO>();
 
   @Autowired
   @Qualifier("restClient")
@@ -54,7 +54,7 @@ public class StockDataClientImp implements HTTPClient<StockDataDTO> {
    * @see com.ciservice.app.common.communication.HTTPClient#getData()
    */
   @Override
-  public List<StockDataDTO> getData() {
+  public Set<StockDataDTO> getData() {
 
     final HttpHeaders headers = new HttpHeaders();
     headers.add("Content-Type", "application/json");
@@ -67,10 +67,10 @@ public class StockDataClientImp implements HTTPClient<StockDataDTO> {
     final ObjectMapper mapper = new ObjectMapper();
 
     try {
-      final StockData stockPriceList =
+      final StockData stockPriceSet =
           mapper.readValue(responceEntity.getBody(), new TypeReference<StockData>() {});
 
-      this.stockPriceDataList = mapStockData.mapping(stockPriceList);
+      this.stockPriceDataSet = mapStockData.mapping(stockPriceSet);
 
     } catch (JsonParseException jsonParseException) {
       throw new SystemErrorException("IM4001:外部通信エラー発生（ボディ形式不正）", jsonParseException);
@@ -80,7 +80,7 @@ public class StockDataClientImp implements HTTPClient<StockDataDTO> {
       throw new SystemErrorException("IM4001:外部通信エラー発生（ボディ形式不正）", ioException);
     }
 
-    return this.stockPriceDataList;
+    return this.stockPriceDataSet;
 
   }
 

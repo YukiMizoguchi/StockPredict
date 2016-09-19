@@ -6,6 +6,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import com.ciservice.app.common.enumeration.PredictResult;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * @author YukiMizoguchi
@@ -55,6 +56,9 @@ public class StockInfo {
   private Date rsltWeekChkDate;
   private PredictResult rsltMonth;
   private Date rsltMonthChkDate;
+  private PredictResult predictDay;
+  private PredictResult predictWeek;
+  private PredictResult predictMonth;
 
   /**
    * @return id
@@ -367,6 +371,7 @@ public class StockInfo {
   /**
    * @return pER
    */
+  @JsonProperty("pER")
   public Double getPER() {
     return pER;
   }
@@ -383,6 +388,7 @@ public class StockInfo {
   /**
    * @return pBR
    */
+  @JsonProperty("pBR")
   public Double getPBR() {
     return pBR;
   }
@@ -399,6 +405,7 @@ public class StockInfo {
   /**
    * @return ePS
    */
+  @JsonProperty("ePS")
   public Double getEPS() {
     return ePS;
   }
@@ -415,6 +422,7 @@ public class StockInfo {
   /**
    * @return bPS
    */
+  @JsonProperty("bPS")
   public Double getBPS() {
     return bPS;
   }
@@ -596,6 +604,48 @@ public class StockInfo {
     this.rsltMonthChkDate = rsltMonthChkDate;
   }
 
+  /**
+   * @return predictDay
+   */
+  public PredictResult getPredictDay() {
+    return predictDay;
+  }
+
+  /**
+   * @param predictDay sets predictDay
+   */
+  public void setPredictDay(PredictResult predictDay) {
+    this.predictDay = predictDay;
+  }
+
+  /**
+   * @return predictWeek
+   */
+  public PredictResult getPredictWeek() {
+    return predictWeek;
+  }
+
+  /**
+   * @param predictWeek sets predictWeek
+   */
+  public void setPredictWeek(PredictResult predictWeek) {
+    this.predictWeek = predictWeek;
+  }
+
+  /**
+   * @return predictMonth
+   */
+  public PredictResult getPredictMonth() {
+    return predictMonth;
+  }
+
+  /**
+   * @param predictMonth sets predictMonth
+   */
+  public void setPredictMonth(PredictResult predictMonth) {
+    this.predictMonth = predictMonth;
+  }
+
   /*
    * (非 Javadoc)
    *
@@ -615,7 +665,8 @@ public class StockInfo {
         + shareUnit + ", highDate=" + highDate + ", highPriceYear=" + highPriceYear + ", lowDate="
         + lowDate + ", lowPriceYear=" + lowPriceYear + ", rsltDay=" + rsltDay + ", rsltDayChkDate="
         + rsltDayChkDate + ", rsltWeek=" + rsltWeek + ", rsltWeekChkDate=" + rsltWeekChkDate
-        + ", rsltMonth=" + rsltMonth + ", rsltMonthChkDate=" + rsltMonthChkDate + "]";
+        + ", rsltMonth=" + rsltMonth + ", rsltMonthChkDate=" + rsltMonthChkDate + ", predictDay="
+        + predictDay + ", predictWeek=" + predictWeek + ", predictMonth=" + predictMonth + "]";
   }
 
 

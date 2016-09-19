@@ -2,9 +2,9 @@ package com.ciservice.app.common.json.map;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -19,16 +19,16 @@ public class MapStockData {
   protected static Logger logger = Logger.getLogger(MapStockData.class);
 
   /**
-   * @param stockDataList
-   * @return List StockDataDTO
+   * @param stockDataSet
+   * @return Set of StockDataDTO
    */
-  public List<StockDataDTO> mapping(StockData stockDataList) {
+  public Set<StockDataDTO> mapping(StockData stockDataSet) {
 
-    final List<StockDataDTO> stockDataDTOList = new ArrayList<StockDataDTO>();
+    final Set<StockDataDTO> stockDataDTOSet = new HashSet<StockDataDTO>();
 
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-    for (String[] stockData : stockDataList.aaData) {
+    for (String[] stockData : stockDataSet.aaData) {
 
       final StockDataDTO stockDataDTO = new StockDataDTO();
       stockDataDTO.setSc(stockData[0]);
@@ -112,10 +112,10 @@ public class MapStockData {
         stockDataDTO.setLowPriceYear(new Double(stockData[17]).doubleValue());
       }
 
-      stockDataDTOList.add(stockDataDTO);
+      stockDataDTOSet.add(stockDataDTO);
 
     }
 
-    return stockDataDTOList;
+    return stockDataDTOSet;
   }
 }

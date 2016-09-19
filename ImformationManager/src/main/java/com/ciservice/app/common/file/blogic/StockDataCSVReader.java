@@ -1,7 +1,7 @@
 package com.ciservice.app.common.file.blogic;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.batch.item.ExecutionContext;
@@ -46,7 +46,7 @@ public class StockDataCSVReader implements CSVFileReader<StockDataDTO> {
    * @see com.ciservice.app.common.file.blogic.CSVFileReader#read(java.lang.String)
    */
   @Override
-  public List<StockDataDTO> read(final String fileName) {
+  public Set<StockDataDTO> read(final String fileName) {
 
 
     // CSVの項目定義
@@ -69,7 +69,7 @@ public class StockDataCSVReader implements CSVFileReader<StockDataDTO> {
     reader.setEncoding("windows-31j");
     reader.open(new ExecutionContext());
 
-    final List<StockDataDTO> stockDataDTOs = new ArrayList<StockDataDTO>();
+    final Set<StockDataDTO> stockDataDTOs = new HashSet<StockDataDTO>();
 
     FieldSet fieldSet = null;
 

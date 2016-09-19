@@ -2,10 +2,10 @@ package com.ciservice.app.common.json.map;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -24,17 +24,17 @@ public class MapStockPrices {
   protected static Logger logger = Logger.getLogger(MapStockPrices.class);
 
   /**
-   * @param stockPriceList
-   * @return List of StockPriceDTO
+   * @param stockPriceSet
+   * @return Set of StockPriceDTO
    */
-  public List<StockPriceDTO> mapping(StockPrices stockPriceList) {
+  public Set<StockPriceDTO> mapping(StockPrices stockPriceSet) {
 
-    final List<StockPriceDTO> stockPriceDTOList = new ArrayList<StockPriceDTO>();
+    final Set<StockPriceDTO> stockPriceDTOSet = new HashSet<StockPriceDTO>();
 
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     final SimpleDateFormat sdfSaved = new SimpleDateFormat("yyyyMMdd");
 
-    for (String[] stockPrice : stockPriceList.aaData) {
+    for (String[] stockPrice : stockPriceSet.aaData) {
 
       final StockPriceDTO stockPriceDTO = new StockPriceDTO();
       stockPriceDTO.setSc(stockPrice[0]);
@@ -115,10 +115,10 @@ public class MapStockPrices {
         stockPriceDTO.setWidthHighLmt(new Double(stockPrice[16]).doubleValue());
       }
 
-      stockPriceDTOList.add(stockPriceDTO);
+      stockPriceDTOSet.add(stockPriceDTO);
 
     }
 
-    return stockPriceDTOList;
+    return stockPriceDTOSet;
   }
 }

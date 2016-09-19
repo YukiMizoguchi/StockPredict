@@ -1,6 +1,6 @@
 package com.ciservice.app.common.json.pojo;
 
-import java.util.List;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -12,7 +12,7 @@ public class StockData {
 
   protected static Logger logger = Logger.getLogger(StockData.class);
 
-  public List<String[]> aaData;
+  public Set<String[]> aaData;
 
   /*
    * (非 Javadoc)
@@ -21,7 +21,7 @@ public class StockData {
    */
   @Override
   public String toString() {
-    return "StockDataList [aaData=" + aaData + "]";
+    return "StockDataSet [aaData=" + aaData + "]";
   }
 
 }

@@ -16,14 +16,14 @@ public class MapStockInfo implements MapData<StockPriceDTO, StockDataDTO, StockI
 
   protected static Logger logger = Logger.getLogger(MapStockInfo.class);
 
-  // CHECKSTYLE:OFF
-  /*
-   * (非 Javadoc)
-   *
+  /**
    * @see com.ciservice.app.common.map.MapData#map(java.lang.Object, java.lang.Object)
+   * @param stockPriceSet
+   * @param stockDataSet
+   * @return Set of StockInfo
    */
-  public StockInfo map(StockPriceDTO stockPriceDTO, StockDataDTO stockDataDTO) {
-    // CHECKSTYLE:ON
+  public StockInfo map(final StockPriceDTO stockPriceDTO, final StockDataDTO stockDataDTO) {
+
 
     final StockInfo stockInfo = new StockInfo();
 
@@ -62,5 +62,4 @@ public class MapStockInfo implements MapData<StockPriceDTO, StockDataDTO, StockI
     return stockInfo;
 
   }
-
 }
