@@ -41,33 +41,36 @@ public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<
 
     final Set<StockInfo> stockInfoSet = new HashSet<>();
 
-    for (final StockInfo stockInfo : item) {
 
-      // 入力データチェック
-      if (stockInfo.getSc() == null) {
-        return null;
-      }
+    // DB使用定義
+    ApplicationContext ctxStockInfoRef =
+        new GenericXmlApplicationContext(SGConst.PROPERTIES_MONGPDB_BEAN_XML);
+    final StockInfoRepository stockInfoRepos = ctxStockInfoRef.getBean(StockInfoRepository.class);
 
-      if (stockInfo.getSavedDate() == null) {
-        return null;
-      }
+    try {
 
-      if (stockInfo.getFixedPrice() == null) {
-        return null;
-      }
+      for (final StockInfo stockInfo : item) {
 
-      final double targetPrice = stockInfo.getFixedPrice();
+        // 入力データチェック
+        if (stockInfo.getSc() == null) {
+          return null;
+        }
 
-      final Date savedDateDay = cmnUtil.getSavedDate(stockInfo.getSavedDate());
+        if (stockInfo.getSavedDate() == null) {
+          return null;
+        }
 
-      // DB使用定義
-      ApplicationContext ctxStockInfoRef =
-          new GenericXmlApplicationContext(SGConst.PROPERTIES_MONGPDB_BEAN_XML);
-      StockInfoRepository stockInfoRepos = ctxStockInfoRef.getBean(StockInfoRepository.class);
+        if (stockInfo.getFixedPrice() == null) {
+          return null;
+        }
 
-      int intCnt = 1;
+        final double targetPrice = stockInfo.getFixedPrice();
 
-      try {
+        final Date savedDateDay = cmnUtil.getSavedDate(stockInfo.getSavedDate());
+
+
+        int intCnt = 1;
+
 
         while (stockInfo.getRsltDay() == null && intCnt < 4) {
           intCnt++;
@@ -88,7 +91,8 @@ public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<
 
           // 価格が取得できない場合
           if (stockInfoRef.getFixedPrice() == null) {
-            throw new SystemErrorException("価格が取得できない");
+            //throw new SystemErrorException("価格が取得できない");
+            continue;
           }
 
           final double prePice = stockInfoRef.getFixedPrice();
@@ -106,20 +110,20 @@ public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<
 
         }
 
+        // 対象日の情報が取得できなかった場合チェック日時を付与
+        if (stockInfo.getRsltDay() == null) {
+          stockInfo.setRsltDayChkDate(new Date());
+        }
 
-      } catch (Exception exception) {
-        throw new SystemErrorException("DBエラー発生（参照）", exception);
-      } finally {
-        ((ConfigurableApplicationContext) ctxStockInfoRef).close();
+        stockInfoSet.add(stockInfo);
+
       }
 
-      // 対象日の情報が取得できなかった場合チェック日時を付与
-      if (stockInfo.getRsltDay() == null) {
-        stockInfo.setRsltDayChkDate(new Date());
-      }
 
-      stockInfoSet.add(stockInfo);
-
+    } catch (Exception exception) {
+      throw new SystemErrorException("DBエラー発生（参照）", exception);
+    } finally {
+      ((ConfigurableApplicationContext) ctxStockInfoRef).close();
     }
 
     return stockInfoSet;
