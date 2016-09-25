@@ -60,25 +60,19 @@ public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<
           return null;
         }
 
-        if (stockInfo.getFixedPrice() == null) {
-          return null;
-        }
-
-        final double targetPrice = stockInfo.getFixedPrice();
-
         final Date savedDateDay = cmnUtil.getSavedDate(stockInfo.getSavedDate());
 
 
-        int intCnt = 1;
+        int intCnt = 0;
 
 
-        while (stockInfo.getRsltDay() == null && intCnt < 4) {
+        while (stockInfo.getRsltDay() == null && intCnt < 3) {
           intCnt++;
 
           // 前日を算出する
           final Calendar calendar = Calendar.getInstance();
           calendar.setTime(savedDateDay);
-          calendar.add(Calendar.DAY_OF_MONTH, -1);
+          calendar.add(Calendar.DAY_OF_MONTH, intCnt);
           final String targetDate = cmnUtil.getSavedDate(calendar.getTime());
 
           final StockInfo stockInfoRef =
@@ -90,22 +84,36 @@ public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<
           }
 
           // 価格が取得できない場合
-          if (stockInfoRef.getFixedPrice() == null) {
-            //throw new SystemErrorException("価格が取得できない");
+          if (stockInfoRef.getDayBeforeRatio() == null) {
+            // throw new SystemErrorException("価格が取得できない");
             continue;
           }
 
-          final double prePice = stockInfoRef.getFixedPrice();
+          final double dayBeforeRatio = stockInfoRef.getDayBeforeRatio();
 
-          if (targetPrice > prePice) {
+
+
+          if (dayBeforeRatio >= 10) {
+            // ターゲット価格が前日より高い(暴騰)
+            stockInfo.setRsltDay(PredictResult.HUP);
+          } else if (dayBeforeRatio >= 5) {
             // ターゲット価格が前日より高い
+            stockInfo.setRsltDay(PredictResult.MUP);
+          } else if (dayBeforeRatio >= 1) {
+            // ターゲット価格が前日より少し高い
             stockInfo.setRsltDay(PredictResult.UP);
-          } else if (targetPrice < prePice) {
-            // ターゲット価格が前日より低い
-            stockInfo.setRsltDay(PredictResult.DOWN);
-          } else {
-            // ターゲット価格が変化なし
+          } else if (dayBeforeRatio > -1) {
+            // ターゲット価格が前日とほぼ同じ
             stockInfo.setRsltDay(PredictResult.KEEP);
+          } else if (dayBeforeRatio > -5) {
+            // ターゲット価格が前日より少し低い
+            stockInfo.setRsltDay(PredictResult.DOWN);
+          } else if (dayBeforeRatio > -10) {
+            // ターゲット価格が前日より低い
+            stockInfo.setRsltDay(PredictResult.MDOWN);
+          } else {
+            // ターゲット価格が前日より低い（暴落）
+            stockInfo.setRsltDay(PredictResult.HDOWN);
           }
 
         }

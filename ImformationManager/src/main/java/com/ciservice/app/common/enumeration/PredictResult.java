@@ -6,6 +6,6 @@ package com.ciservice.app.common.enumeration;
  */
 public enum PredictResult {
 
-  UP, DOWN, KEEP
+  HUP, MUP, UP, KEEP, DOWN, MDOWN, HDOWN
 
 }
