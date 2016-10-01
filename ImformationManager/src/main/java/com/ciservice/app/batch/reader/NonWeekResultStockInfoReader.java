@@ -21,8 +21,8 @@ import com.ciservice.app.common.exception.SystemErrorException;
  * {@link ItemReader} with hard-coded input data.
  */
 
-@Component("nonDayResultStockInfoReader")
-public class NonDayResultStockInfoReader implements ItemReader<Set<StockInfo>> {
+@Component("nonWeekResultStockInfoReader")
+public class NonWeekResultStockInfoReader implements ItemReader<Set<StockInfo>> {
 
   @Value("${common.num.getnonrsltrcord}")
   private int limit;
@@ -47,7 +47,7 @@ public class NonDayResultStockInfoReader implements ItemReader<Set<StockInfo>> {
 
       // rsltDayがNULLの情報を数件取得
       final Page<StockInfo> stockInfoPage = stockInfoRepos
-          .findByRsltDayNullAndRsltDayChkDateNullAndFixedPriceNotNull(new PageRequest(0, limit));
+          .findByRsltWeekNullAndRsltWeekChkDateNullAndFixedPriceNotNull(new PageRequest(0, limit));
 
       stockInfoSet = new HashSet<StockInfo>(stockInfoPage.getContent());
 

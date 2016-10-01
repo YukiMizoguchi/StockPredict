@@ -21,6 +21,8 @@ public interface StockInfoRepository extends MongoRepository<StockInfo, Long> {
 
   Page<StockInfo> findByRsltDayNullAndRsltDayChkDateNullAndFixedPriceNotNull(Pageable pageable);
 
+  Page<StockInfo> findByRsltWeekNullAndRsltWeekChkDateNullAndFixedPriceNotNull(Pageable pageable);
+
   StockInfo findOneByRsltDayChkDateBefore(Date rsltDayChkDate);
 
   StockInfo findOneByScAndSavedDate(String sc, String savedDate);
