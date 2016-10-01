@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
@@ -28,6 +29,8 @@ public class AddWeekResultProcessor implements ItemProcessor<Set<StockInfo>, Set
 
   protected static Logger logger = Logger.getLogger(AddWeekResultProcessor.class);
 
+  @Value("${common.date.skipRsltDay}")
+  private int skipRsltDay;
 
   private final CommonUtil cmnUtil = new CommonUtil();
 
@@ -39,8 +42,11 @@ public class AddWeekResultProcessor implements ItemProcessor<Set<StockInfo>, Set
   @Override
   public Set<StockInfo> process(Set<StockInfo> item) throws Exception {
 
-    final Set<StockInfo> stockInfoSet = new HashSet<>();
+    if (item == null) {
+      return null;
+    }
 
+    final Set<StockInfo> stockInfoSet = new HashSet<>();
 
     // DB使用定義
     ApplicationContext ctxStockInfoRef =
@@ -71,7 +77,7 @@ public class AddWeekResultProcessor implements ItemProcessor<Set<StockInfo>, Set
         int intCnt = 0;
 
 
-        while (stockInfo.getRsltWeek() == null && intCnt < 3) {
+        while (stockInfo.getRsltWeek() == null && intCnt < skipRsltDay) {
           intCnt++;
 
           // 前週日を算出する
@@ -96,25 +102,24 @@ public class AddWeekResultProcessor implements ItemProcessor<Set<StockInfo>, Set
 
           final double fixedPrice = stockInfo.getFixedPrice();
           final double targetFixedPrice = stockInfoRef.getFixedPrice();
-          final double weekBeforeRatio = (targetFixedPrice - fixedPrice) / fixedPrice * 100;
+          final double beforeRatio = (targetFixedPrice - fixedPrice) / fixedPrice * 100;
 
-
-          if (weekBeforeRatio >= 30) {
+          if (beforeRatio >= 30) {
             // ターゲット価格が対象日より高い(暴騰)
             stockInfo.setRsltWeek(PredictResult.HUP);
-          } else if (weekBeforeRatio >= 10) {
+          } else if (beforeRatio >= 10) {
             // ターゲット価格が対象日より高い
             stockInfo.setRsltWeek(PredictResult.MUP);
-          } else if (weekBeforeRatio >= 5) {
+          } else if (beforeRatio >= 5) {
             // ターゲット価格が対象日より少し高い
             stockInfo.setRsltWeek(PredictResult.UP);
-          } else if (weekBeforeRatio > -5) {
+          } else if (beforeRatio > -5) {
             // ターゲット価格が対象日とほぼ同じ
             stockInfo.setRsltWeek(PredictResult.KEEP);
-          } else if (weekBeforeRatio > -10) {
+          } else if (beforeRatio > -10) {
             // ターゲット価格が対象日より少し低い
             stockInfo.setRsltWeek(PredictResult.DOWN);
-          } else if (weekBeforeRatio > -30) {
+          } else if (beforeRatio > -30) {
             // ターゲット価格が対象日より低い
             stockInfo.setRsltWeek(PredictResult.MDOWN);
           } else {

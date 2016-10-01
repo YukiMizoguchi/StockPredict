@@ -24,10 +24,10 @@ import com.ciservice.app.common.util.CommonUtil;
  * @author YukiMizoguchi
  *
  */
-@Component("addDayRsltProcessor")
-public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<StockInfo>> {
+@Component("addMonthRsltProcessor")
+public class AddMonthResultProcessor implements ItemProcessor<Set<StockInfo>, Set<StockInfo>> {
 
-  protected static Logger logger = Logger.getLogger(AddDayResultProcessor.class);
+  protected static Logger logger = Logger.getLogger(AddMonthResultProcessor.class);
 
   @Value("${common.date.skipRsltDay}")
   private int skipRsltDay;
@@ -48,7 +48,6 @@ public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<
 
     final Set<StockInfo> stockInfoSet = new HashSet<>();
 
-
     // DB使用定義
     ApplicationContext ctxStockInfoRef =
         new GenericXmlApplicationContext(SGConst.PROPERTIES_MONGPDB_BEAN_XML);
@@ -67,19 +66,25 @@ public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<
           return null;
         }
 
+
+        if (stockInfo.getFixedPrice() == null) {
+          continue;
+        }
+
         final Date savedDateDay = cmnUtil.getSavedDate(stockInfo.getSavedDate());
 
 
         int intCnt = 0;
 
 
-        while (stockInfo.getRsltDay() == null && intCnt < skipRsltDay) {
+        while (stockInfo.getRsltMonth() == null && intCnt < skipRsltDay) {
           intCnt++;
 
-          // 前日を算出する
+          // 前週日を算出する
           final Calendar calendar = Calendar.getInstance();
           calendar.setTime(savedDateDay);
-          calendar.add(Calendar.DAY_OF_MONTH, intCnt);
+          calendar.add(Calendar.MONTH, 1);
+          calendar.add(Calendar.DAY_OF_MONTH, intCnt - 1);
           final String targetDate = cmnUtil.getSavedDate(calendar.getTime());
 
           final StockInfo stockInfoRef =
@@ -91,41 +96,43 @@ public class AddDayResultProcessor implements ItemProcessor<Set<StockInfo>, Set<
           }
 
           // 価格が取得できない場合
-          if (stockInfoRef.getDayBeforeRatio() == null) {
+          if (stockInfoRef.getFixedPrice() == null) {
             // throw new SystemErrorException("価格が取得できない");
             continue;
           }
 
-          final double beforeRatio = stockInfoRef.getDayBeforeRatio();
+          final double fixedPrice = stockInfo.getFixedPrice();
+          final double targetFixedPrice = stockInfoRef.getFixedPrice();
+          final double beforeRatio = (targetFixedPrice - fixedPrice) / fixedPrice * 100;
 
-          if (beforeRatio >= 10) {
-            // ターゲット価格が前日より高い(暴騰)
-            stockInfo.setRsltDay(PredictResult.HUP);
+          if (beforeRatio >= 30) {
+            // ターゲット価格が対象日より高い(暴騰)
+            stockInfo.setRsltMonth(PredictResult.HUP);
+          } else if (beforeRatio >= 10) {
+            // ターゲット価格が対象日より高い
+            stockInfo.setRsltMonth(PredictResult.MUP);
           } else if (beforeRatio >= 5) {
-            // ターゲット価格が前日より高い
-            stockInfo.setRsltDay(PredictResult.MUP);
-          } else if (beforeRatio >= 1) {
-            // ターゲット価格が前日より少し高い
-            stockInfo.setRsltDay(PredictResult.UP);
-          } else if (beforeRatio > -1) {
-            // ターゲット価格が前日とほぼ同じ
-            stockInfo.setRsltDay(PredictResult.KEEP);
+            // ターゲット価格が対象日より少し高い
+            stockInfo.setRsltMonth(PredictResult.UP);
           } else if (beforeRatio > -5) {
-            // ターゲット価格が前日より少し低い
-            stockInfo.setRsltDay(PredictResult.DOWN);
+            // ターゲット価格が対象日とほぼ同じ
+            stockInfo.setRsltMonth(PredictResult.KEEP);
           } else if (beforeRatio > -10) {
-            // ターゲット価格が前日より低い
-            stockInfo.setRsltDay(PredictResult.MDOWN);
+            // ターゲット価格が対象日より少し低い
+            stockInfo.setRsltMonth(PredictResult.DOWN);
+          } else if (beforeRatio > -30) {
+            // ターゲット価格が対象日より低い
+            stockInfo.setRsltMonth(PredictResult.MDOWN);
           } else {
-            // ターゲット価格が前日より低い（暴落）
-            stockInfo.setRsltDay(PredictResult.HDOWN);
+            // ターゲット価格が対象日より低い（暴落）
+            stockInfo.setRsltMonth(PredictResult.HDOWN);
           }
 
         }
 
         // 対象日の情報が取得できなかった場合チェック日時を付与
-        if (stockInfo.getRsltDay() == null) {
-          stockInfo.setRsltDayChkDate(new Date());
+        if (stockInfo.getRsltMonth() == null) {
+          stockInfo.setRsltMonthChkDate(new Date());
         }
 
         stockInfoSet.add(stockInfo);
