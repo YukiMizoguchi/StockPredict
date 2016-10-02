@@ -1,4 +1,4 @@
-package com.ciservice.app.common.map;
+package com.ciservice.app.common.map.blogic;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -28,7 +28,7 @@ public class MapStockInfoSet
   protected static Logger logger = Logger.getLogger(MapStockInfoSet.class);
 
   /**
-   * @see com.ciservice.app.common.map.MapData#map(java.lang.Object, java.lang.Object)
+   * @see com.ciservice.app.common.map.blogic.MapData#map(java.lang.Object, java.lang.Object)
    * @param stockPriceSet
    * @param stockDataSet
    * @return Set of StockInfo

@@ -17,8 +17,16 @@ public class PredictProcessor implements ItemProcessor<Set<StockInfo>, Set<Stock
   protected static Logger logger = Logger.getLogger(PredictProcessor.class);
 
   @Autowired
-  @Qualifier("predictClient")
-  private HTTPClientWithBody<StockInfo, Set<StockInfo>> client;
+  @Qualifier("predictDayClient")
+  private HTTPClientWithBody<StockInfo, Set<StockInfo>> clientDay;
+
+  @Autowired
+  @Qualifier("predictWeekClient")
+  private HTTPClientWithBody<StockInfo, Set<StockInfo>> clientWeek;
+
+  @Autowired
+  @Qualifier("predictMonthClient")
+  private HTTPClientWithBody<StockInfo, Set<StockInfo>> clientMonth;
 
   /*
    * (非 Javadoc)
@@ -28,10 +36,16 @@ public class PredictProcessor implements ItemProcessor<Set<StockInfo>, Set<Stock
   @Override
   public Set<StockInfo> process(Set<StockInfo> item) throws Exception {
 
-    // AIによる予測
-    final Set<StockInfo> stockInfos = client.getData(item);
+    // AIによる予測(DAY)
+    final Set<StockInfo> sInfosDay = clientDay.getData(item);
 
-    return stockInfos;
+    // AIによる予測(WEEK)
+    final Set<StockInfo> sInfosDayWeek = clientWeek.getData(sInfosDay);
+
+    // AIによる予測(MONTH)
+    final Set<StockInfo> sInfosDayWeekMonth = clientMonth.getData(sInfosDayWeek);
+
+    return sInfosDayWeekMonth;
   }
 
 }

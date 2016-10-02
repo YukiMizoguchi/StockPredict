@@ -1,4 +1,4 @@
-package com.ciservice.app.common.map;
+package com.ciservice.app.common.map.blogic;
 
 public interface MapData<E1, E2, E3> {
 

@@ -1,4 +1,4 @@
-package com.ciservice.app.common.map;
+package com.ciservice.app.common.map.blogic;
 
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
@@ -17,7 +17,7 @@ public class MapStockInfo implements MapData<StockPriceDTO, StockDataDTO, StockI
   protected static Logger logger = Logger.getLogger(MapStockInfo.class);
 
   /**
-   * @see com.ciservice.app.common.map.MapData#map(java.lang.Object, java.lang.Object)
+   * @see com.ciservice.app.common.map.blogic.MapData#map(java.lang.Object, java.lang.Object)
    * @param stockPriceSet
    * @param stockDataSet
    * @return Set of StockInfo

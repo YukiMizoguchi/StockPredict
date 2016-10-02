@@ -12,7 +12,7 @@ import com.ciservice.app.common.db.mongodb.doc.StockInfo;
 import com.ciservice.app.common.dto.StockDataDTO;
 import com.ciservice.app.common.dto.StockInfoSetDTO;
 import com.ciservice.app.common.dto.StockPriceDTO;
-import com.ciservice.app.common.map.MapData;
+import com.ciservice.app.common.map.blogic.MapData;
 
 @Component("stockInfoProcessor")
 public class StockInfoProcessor implements ItemProcessor<StockInfoSetDTO, Set<StockInfo>> {

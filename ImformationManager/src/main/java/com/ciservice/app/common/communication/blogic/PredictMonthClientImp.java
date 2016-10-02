@@ -19,7 +19,7 @@ import com.ciservice.app.common.communication.common.RestClient;
 import com.ciservice.app.common.db.mongodb.doc.StockInfo;
 import com.ciservice.app.common.exception.SystemErrorException;
 import com.ciservice.app.common.json.pojo.PredictedStockInfo;
-import com.ciservice.app.common.map.MapData;
+import com.ciservice.app.common.map.blogic.MapData;
 import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -30,12 +30,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * @author YukiMizoguchi
  *
  */
-@Service("predictClient")
-public class PredictClientImp implements HTTPClientWithBody<StockInfo, Set<StockInfo>> {
+@Service("predictMonthClient")
+public class PredictMonthClientImp implements HTTPClientWithBody<StockInfo, Set<StockInfo>> {
 
-  protected static Logger logger = Logger.getLogger(PredictClientImp.class);
+  protected static Logger logger = Logger.getLogger(PredictMonthClientImp.class);
 
-  @Value("${common.url.predict}")
+  @Value("${common.url.predictmonth}")
   private String uri;
 
   private ResponseEntity<String> responceEntity;
@@ -45,7 +45,7 @@ public class PredictClientImp implements HTTPClientWithBody<StockInfo, Set<Stock
   private RestClient restClient;
 
   @Autowired
-  @Qualifier("mapPredict")
+  @Qualifier("mapPredictMonth")
   private MapData<Set<StockInfo>, Set<PredictedStockInfo>, Set<StockInfo>> mapPredict;
 
   /*
@@ -88,7 +88,6 @@ public class PredictClientImp implements HTTPClientWithBody<StockInfo, Set<Stock
       final Set<PredictedStockInfo> resultSet = new HashSet<PredictedStockInfo>(result);
 
       predictedStockInfos = mapPredict.map(stockInfos, resultSet);
-      // predictedStockInfos = resultSet;
 
     } catch (JsonParseException jsonParseException) {
       throw new SystemErrorException("IM4001:外部通信エラー発生（ボディ形式不正）", jsonParseException);

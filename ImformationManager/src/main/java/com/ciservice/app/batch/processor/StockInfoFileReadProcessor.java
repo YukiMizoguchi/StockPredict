@@ -14,7 +14,7 @@ import com.ciservice.app.common.dto.StockDataDTO;
 import com.ciservice.app.common.dto.StockPriceDTO;
 import com.ciservice.app.common.exception.SystemErrorException;
 import com.ciservice.app.common.file.common.CSVFileReader;
-import com.ciservice.app.common.map.MapData;
+import com.ciservice.app.common.map.blogic.MapData;
 
 @Component("stockInfoFileReadProcessor")
 public class StockInfoFileReadProcessor implements ItemProcessor<StockPriceDTO, StockInfo> {
