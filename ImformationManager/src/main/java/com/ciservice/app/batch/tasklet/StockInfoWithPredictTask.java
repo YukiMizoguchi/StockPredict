@@ -40,7 +40,7 @@ public class StockInfoWithPredictTask implements Tasklet {
   private ItemProcessor<Set<StockInfo>, Set<StockInfo>> predictData;
 
   @Autowired
-  @Qualifier("stockInfoListWriter")
+  @Qualifier("stockInfoListSendWriter")
   private ItemWriter<Set<StockInfo>> writeData;
 
   /*

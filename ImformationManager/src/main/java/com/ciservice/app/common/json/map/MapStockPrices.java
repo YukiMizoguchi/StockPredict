@@ -39,8 +39,8 @@ public class MapStockPrices {
       final StockPriceDTO stockPriceDTO = new StockPriceDTO();
       stockPriceDTO.setSc(stockPrice[0]);
       stockPriceDTO.setName(stockPrice[1]);
-      stockPriceDTO.setBusiness(stockPrice[2]);
-      stockPriceDTO.setMarcket(stockPrice[3]);
+      stockPriceDTO.setMarcket(stockPrice[2]);
+      stockPriceDTO.setBusiness(stockPrice[3]);
 
       if (!stockPrice[4].equals("-")) {
 

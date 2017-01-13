@@ -3,10 +3,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>org.springframework.samples.batch</groupId>
+    <groupId>com.ciservice.app</groupId>
     <artifactId>InformationManager</artifactId>
     <version>1.0.0.CI-SNAPSHOT</version>
-    <packaging>jar</packaging>
     <name>Command Line Spring Batch Module</name>
     <url>http://www.springframework.org/spring-batch/archetypes/simple-cli-archetype</url>
     <description>
@@ -56,6 +55,12 @@
             <artifactId>spring-context</artifactId>
             <version>${spring.framework.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring.framework.version}</version>
+        </dependency>
+
 
         <dependency>
             <groupId>org.springframework.data</groupId>
@@ -143,15 +148,49 @@
             <version>${jackson.version}</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/com.sun.mail/javax.mail -->
+        <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
+        <dependency>
+            <groupId>org.apache.velocity</groupId>
+            <artifactId>velocity</artifactId>
+            <version>1.7</version>
+        </dependency>
+
 
     </dependencies>
 
 
     <build>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!-- ファイルを除く設定 -->
+                <excludes>
+                    <exclude>**/*.csv</exclude>
+                    <exclude>**/*.csv*</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <index>false</index>
                     <archive>
@@ -161,10 +200,12 @@
                             <addExtensions>true</addExtensions>
                             <classpathPrefix>lib/</classpathPrefix>
                         </manifest>
+                        <manifestEntries>
+                            <Class-Path>./</Class-Path>
+                        </manifestEntries>
                     </archive>
                 </configuration>
             </plugin>
-
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

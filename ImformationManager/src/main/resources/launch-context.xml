@@ -21,5 +21,6 @@
     <batch:job-repository id="jobRepository" />
 
     <import resource="classpath:/META-INF/spring/module-context.xml" />
+    <import resource="classpath:/META-INF/spring/servlet-context.xml" />
 
 </beans>

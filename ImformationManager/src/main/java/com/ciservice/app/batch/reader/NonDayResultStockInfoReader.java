@@ -3,6 +3,7 @@ package com.ciservice.app.batch.reader;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -23,6 +24,8 @@ import com.ciservice.app.common.exception.SystemErrorException;
 
 @Component("nonDayResultStockInfoReader")
 public class NonDayResultStockInfoReader implements ItemReader<Set<StockInfo>> {
+
+  protected static Logger logger = Logger.getLogger(NonDayResultStockInfoReader.class);
 
   @Value("${common.num.getnonrsltrcord}")
   private int limit;
@@ -56,6 +59,11 @@ public class NonDayResultStockInfoReader implements ItemReader<Set<StockInfo>> {
       throw new SystemErrorException("IM4103:DBエラー発生（参照）", exception);
     } finally {
       ((ConfigurableApplicationContext) ctxStockInfoRef).close();
+    }
+
+    if (stockInfoSet.isEmpty()) {
+      logger.info("日次結果の設定完了");
+      return null;
     }
 
     return stockInfoSet;

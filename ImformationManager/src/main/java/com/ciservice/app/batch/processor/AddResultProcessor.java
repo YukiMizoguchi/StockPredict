@@ -41,15 +41,15 @@ public class AddResultProcessor implements ItemProcessor<Set<StockInfo>, Set<Sto
 
     // 日次データ更新
     final Set<StockInfo> sInfosDay = processDay.process(item);
-    System.out.println("日次結果設定完了");
+    //System.out.println("日次結果設定完了");
 
     // 週次データ更新
     final Set<StockInfo> sInfosDayWeek = processWeek.process(sInfosDay);
-    System.out.println("週次結果設定完了");
+    //System.out.println("週次結果設定完了");
 
     // 月次データ更新
     final Set<StockInfo> sInfosDayWeekMonth = processMonth.process(sInfosDayWeek);
-    System.out.println("月次結果設定完了");
+    //System.out.println("月次結果設定完了");
 
     return sInfosDayWeekMonth;
   }

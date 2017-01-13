@@ -14,8 +14,8 @@ public class StockDataDTO {
 
   private String sc;
   private String name;
-  private String business;
   private String marcket;
+  private String business;
   private Double marketCapt;
   private Double issuedShares;
   private Double dividendYield;
@@ -62,20 +62,6 @@ public class StockDataDTO {
   }
 
   /**
-   * @return business
-   */
-  public String getBusiness() {
-    return business;
-  }
-
-  /**
-   * @param business セットする business
-   */
-  public void setBusiness(String business) {
-    this.business = business;
-  }
-
-  /**
    * @return marcket
    */
   public String getMarcket() {
@@ -87,6 +73,20 @@ public class StockDataDTO {
    */
   public void setMarcket(String marcket) {
     this.marcket = marcket;
+  }
+
+  /**
+   * @return business
+   */
+  public String getBusiness() {
+    return business;
+  }
+
+  /**
+   * @param business セットする business
+   */
+  public void setBusiness(String business) {
+    this.business = business;
   }
 
   /**

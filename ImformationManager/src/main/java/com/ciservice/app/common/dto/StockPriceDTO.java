@@ -15,8 +15,8 @@ public class StockPriceDTO {
   private String sc;
   private String savedDate;
   private String name;
-  private String business;
   private String marcket;
+  private String business;
   private Date date;
   private Double fixedPrice;
   private Double dayBeforeDiff;
@@ -60,20 +60,6 @@ public class StockPriceDTO {
   }
 
   /**
-   * @return business
-   */
-  public String getBusiness() {
-    return business;
-  }
-
-  /**
-   * @param business セットする business
-   */
-  public void setBusiness(String business) {
-    this.business = business;
-  }
-
-  /**
    * @return marcket
    */
   public String getMarcket() {
@@ -85,6 +71,20 @@ public class StockPriceDTO {
    */
   public void setMarcket(String marcket) {
     this.marcket = marcket;
+  }
+
+  /**
+   * @return business
+   */
+  public String getBusiness() {
+    return business;
+  }
+
+  /**
+   * @param business セットする business
+   */
+  public void setBusiness(String business) {
+    this.business = business;
   }
 
   /**

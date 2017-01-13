@@ -33,8 +33,8 @@ public class MapStockData {
       final StockDataDTO stockDataDTO = new StockDataDTO();
       stockDataDTO.setSc(stockData[0]);
       stockDataDTO.setName(stockData[1]);
-      stockDataDTO.setBusiness(stockData[2]);
-      stockDataDTO.setMarcket(stockData[3]);
+      stockDataDTO.setMarcket(stockData[2]);
+      stockDataDTO.setBusiness(stockData[3]);
 
       if (!stockData[4].equals("-")) {
         stockDataDTO.setMarketCapt(new Double(stockData[4]).doubleValue());

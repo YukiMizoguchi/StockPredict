@@ -54,10 +54,10 @@ public class StockInfoListWriter implements ItemWriter<Set<StockInfo>> {
           final StringBuilder resultString = new StringBuilder();
 
           if (savedStockInfo == null) {
-            resultString.append("更新なし");
+            resultString.append("[更新なし]");
 
           } else {
-            resultString.append("正常更新");
+            resultString.append("[正常更新]");
 
           }
 
@@ -67,6 +67,7 @@ public class StockInfoListWriter implements ItemWriter<Set<StockInfo>> {
           resultString.append(stockInfo.getSavedDate());
 
           System.out.println(resultString.toString());
+          logger.info(resultString.toString());
 
         }
 

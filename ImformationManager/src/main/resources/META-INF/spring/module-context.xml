@@ -180,7 +180,7 @@
                     <beans:bean
                         class="org.springframework.batch.item.file.transform.DelimitedLineTokenizer">
                         <beans:property name="names"
-                            value="sc, name, business, marcket, date, fixedPrice, dayBeforeDiff, dayBeforeRatio, dayBeforePrice, openPrice, highPrice, lowPrice, volume, tradingValue, marketCapt, widthLowLmt, widthHighLmt" />
+                            value="sc, name, marcket, business, date, fixedPrice, dayBeforeDiff, dayBeforeRatio, dayBeforePrice, openPrice, highPrice, lowPrice, volume, tradingValue, marketCapt, widthLowLmt, widthHighLmt" />
                     </beans:bean>
                 </beans:property>
                 <beans:property name="fieldSetMapper">

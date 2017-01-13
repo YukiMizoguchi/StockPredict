@@ -51,7 +51,7 @@ public class StockDataCSVReader implements CSVFileReader<StockDataDTO> {
 
     // CSVの項目定義
     DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
-    lineTokenizer.setNames(new String[] {"sc", "name", "business", "marcket", "marketCapt",
+    lineTokenizer.setNames(new String[] {"sc", "name", "marcket", "business", "marketCapt",
         "issuedShares", "dividendYield", "perShareDividend", "pER", "pBR", "ePS", "bPS",
         "minPrchAmnt", "shareUnit", "highDate", "highPriceYear", "lowDate", "lowPriceYear"});
     lineTokenizer.setStrict(true);
@@ -63,7 +63,7 @@ public class StockDataCSVReader implements CSVFileReader<StockDataDTO> {
     FlatFileItemReader<FieldSet> reader = new FlatFileItemReader<FieldSet>();
     reader.setLineMapper(lineMapper);
 
-    final Resource resource = resourceLoader.getResource("classpath:" + fileName);
+    final Resource resource = resourceLoader.getResource(fileName);
     reader.setResource(resource);
     reader.setLinesToSkip(1);
     reader.setEncoding("windows-31j");
