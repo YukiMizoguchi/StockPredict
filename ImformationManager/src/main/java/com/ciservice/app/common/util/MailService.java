@@ -110,7 +110,7 @@ public class MailService {
   }
 
   /**
-   * @param messageTexthtml sets messageTextHtml
+   * @param messageTexthtml
    */
   public void setMessageTextHtml(String messageTextHtml) {
     this.messageTextHtml = messageTextHtml;

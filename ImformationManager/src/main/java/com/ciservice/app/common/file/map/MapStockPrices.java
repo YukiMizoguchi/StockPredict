@@ -53,7 +53,8 @@ public class MapStockPrices implements FieldSetMapper<StockPriceDTO> {
       }
     } else {
       // 取得できなかった場合はメッセージを出力
-      throw new SystemErrorException("IM8905:内部アプリケーションエラー（ファイルフォーマット不正（日付取得不可））");
+      return null;
+      // throw new SystemErrorException("IM8905:内部アプリケーションエラー（ファイルフォーマット不正（日付取得不可））");
     }
 
     if (!fieldSet.readString("fixedPrice").equals("-")) {

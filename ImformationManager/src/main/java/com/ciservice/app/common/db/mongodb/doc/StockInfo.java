@@ -646,10 +646,9 @@ public class StockInfo {
     this.predictMonth = predictMonth;
   }
 
-  /*
-   * (非 Javadoc)
-   *
+  /**
    * @see java.lang.Object#toString()
+   * @return
    */
   @Override
   public String toString() {
@@ -668,6 +667,5 @@ public class StockInfo {
         + ", rsltMonth=" + rsltMonth + ", rsltMonthChkDate=" + rsltMonthChkDate + ", predictDay="
         + predictDay + ", predictWeek=" + predictWeek + ", predictMonth=" + predictMonth + "]";
   }
-
 
 }

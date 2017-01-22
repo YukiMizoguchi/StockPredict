@@ -10,7 +10,9 @@ import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import com.ciservice.app.common.constant.SGConst;
+import com.ciservice.app.common.db.mongodb.doc.ModelInfo;
 import com.ciservice.app.common.db.mongodb.doc.StockInfo;
+import com.ciservice.app.common.db.mongodb.repos.ModelInfoRepository;
 import com.ciservice.app.common.db.mongodb.repos.StockInfoRepository;
 import com.ciservice.app.common.exception.SystemErrorException;
 
@@ -39,6 +41,11 @@ public class StockInfoWriter implements ItemWriter<StockInfo> {
         new GenericXmlApplicationContext(SGConst.PROPERTIES_MONGPDB_BEAN_XML);
     final StockInfoRepository stockInfoRepos = ctxStockInfoReg.getBean(StockInfoRepository.class);
 
+    // DB使用定義
+    final ApplicationContext ctxModelInfoReg =
+        new GenericXmlApplicationContext(SGConst.PROPERTIES_MONGPDB_BEAN_XML);
+    final ModelInfoRepository modelInfoRepos = ctxModelInfoReg.getBean(ModelInfoRepository.class);
+
     try {
 
       // StockInfo分更新
@@ -46,13 +53,22 @@ public class StockInfoWriter implements ItemWriter<StockInfo> {
       for (final StockInfo stockInfo : items) {
         // DB更新
         final StockInfo savedStockInfo = stockInfoRepos.save(stockInfo);
+
+
         final StringBuilder resultString = new StringBuilder();
 
         if (savedStockInfo == null) {
-          resultString.append("更新なし");
+          resultString.append("[更新なし]");
 
         } else {
-          resultString.append("正常更新");
+
+          final ModelInfo modelInfo = new ModelInfo();
+          modelInfo.setSavedDate(savedStockInfo.getSavedDate());
+          modelInfo.setLearnCountDay(0);
+          modelInfo.setLearnCountWeek(0);
+          modelInfo.setLearnCountMonth(0);
+          modelInfoRepos.insert(modelInfo);
+          resultString.append("[正常更新]");
 
         }
 
@@ -61,7 +77,8 @@ public class StockInfoWriter implements ItemWriter<StockInfo> {
         resultString.append(" savedDate=");
         resultString.append(stockInfo.getSavedDate());
 
-        System.out.println(resultString.toString());
+        // System.out.println(resultString.toString());
+        logger.info(resultString.toString());
 
       }
 
@@ -69,6 +86,7 @@ public class StockInfoWriter implements ItemWriter<StockInfo> {
       throw new SystemErrorException("IM4102:DBエラー発生（更新）", exception);
     } finally {
       ((ConfigurableApplicationContext) ctxStockInfoReg).close();
+      ((ConfigurableApplicationContext) ctxModelInfoReg).close();
     }
 
   }

@@ -75,7 +75,8 @@ public class StockInfoListSendWriter implements ItemWriter<Set<StockInfo>> {
           resultString.append(" savedDate=");
           resultString.append(stockInfo.getSavedDate());
 
-          System.out.println(resultString.toString());
+          // System.out.println(resultString.toString());
+          logger.info(resultString.toString());
 
         }
 

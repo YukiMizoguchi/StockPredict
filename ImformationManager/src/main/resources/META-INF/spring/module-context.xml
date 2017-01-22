@@ -7,7 +7,9 @@
     http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd">
 
 
-    <batch:job id="stockInfoJob">
+    <!--JOB -->
+
+    <batch:job id="StockInfoJob">
         <batch:step id="getStockInfoStep">
             <batch:tasklet ref="getStockInfoTask" />
             <batch:end on="*" />
@@ -15,12 +17,12 @@
     </batch:job>
 
 
-    <batch:job id="stockInfoLoaderJob">
+    <batch:job id="StockInfoLoaderJob">
         <batch:step id="getStockInfoListStep">
             <batch:tasklet transaction-manager="transactionManager"
                 start-limit="100">
                 <batch:chunk reader="multiResourceReader"
-                    writer="stockInfoWriter" commit-interval="2000"
+                    writer="stockInfoWriter" commit-interval="3000"
                     processor="stockInfoFileReadProcessor" skip-limit="1000000">
                     <batch:skippable-exception-classes>
                         <batch:include
@@ -37,121 +39,177 @@
     </batch:job>
 
 
-    <batch:job id="stockInfoUpdateDayJob">
-        <batch:step id="setResultDayStep">
-            <batch:tasklet transaction-manager="transactionManager"
-                start-limit="100">
-                <batch:chunk reader="nonDayResultStockInfoReader"
-                    writer="stockInfoListWriter" commit-interval="1"
-                    processor="addDayRsltProcessor">
-                </batch:chunk>
-            </batch:tasklet>
-        </batch:step>
-    </batch:job>
+    <batch:job id="StockInfoUpdateAllJob">
 
+        <batch:flow id="StockInfoUpdateAllJob.stockInfoUpdateFlow"
+            parent="stockInfoUpdateFlow" next="StockInfoUpdateAllJob.stockInfoReUpdateFlow" />
 
-    <batch:job id="stockInfoUpdateWeekJob">
-        <batch:step id="setResultWeekStep">
-            <batch:tasklet transaction-manager="transactionManager"
-                start-limit="100">
-                <batch:chunk reader="nonWeekResultStockInfoReader"
-                    writer="stockInfoListWriter" commit-interval="1"
-                    processor="addWeekRsltProcessor">
-                </batch:chunk>
-            </batch:tasklet>
-        </batch:step>
-    </batch:job>
-
-    <batch:job id="stockInfoUpdateMonthJob">
-        <batch:step id="setResultMonthStep">
-            <batch:tasklet transaction-manager="transactionManager"
-                start-limit="100">
-                <batch:chunk reader="nonMonthResultStockInfoReader"
-                    writer="stockInfoListWriter" commit-interval="1"
-                    processor="addMonthRsltProcessor">
-                </batch:chunk>
-            </batch:tasklet>
-        </batch:step>
-    </batch:job>
-
-
-    <batch:job id="stockInfoUpdateJob">
-
-        <batch:flow id="stockInfoUpdateJobFlow" parent="stockInfoUpdateFlow" />
+        <batch:flow id="StockInfoUpdateAllJob.stockInfoReUpdateFlow"
+            parent="stockInfoReUpdateFlow" />
 
     </batch:job>
 
-    <batch:flow id="stockInfoUpdateFlow"
-        xmlns="http://www.springframework.org/schema/batch ">
+    <batch:job id="StockInfoUpdateDayJob">
+        <batch:step id="StockInfoUpdateDayJob.setResultDayStep"
+            parent="setResultDayStep" />
+    </batch:job>
 
-        <batch:step id="setResultStep" next="setResultDayStepCont">
-            <batch:tasklet transaction-manager="transactionManager"
-                start-limit="100">
-                <batch:chunk reader="nonResultStockInfoReader"
-                    writer="stockInfoListWriter" commit-interval="1"
-                    processor="addRsltProcessor">
-                </batch:chunk>
-            </batch:tasklet>
-        </batch:step>
-        <batch:step id="setResultDayStepCont" next="setResultWeekStepCont">
-            <batch:tasklet transaction-manager="transactionManager"
-                start-limit="100">
-                <batch:chunk reader="nonDayResultStockInfoReader"
-                    writer="stockInfoListWriter" commit-interval="1"
-                    processor="addDayRsltProcessor">
-                </batch:chunk>
-            </batch:tasklet>
-        </batch:step>
-        <batch:step id="setResultWeekStepCont" next="setResultMonthStepCont">
-            <batch:tasklet transaction-manager="transactionManager"
-                start-limit="100">
-                <batch:chunk reader="nonWeekResultStockInfoReader"
-                    writer="stockInfoListWriter" commit-interval="1"
-                    processor="addWeekRsltProcessor">
-                </batch:chunk>
-            </batch:tasklet>
-        </batch:step>
-        <batch:step id="setResultMonthStepCont">
-            <batch:tasklet transaction-manager="transactionManager"
-                start-limit="100">
-                <batch:chunk reader="nonMonthResultStockInfoReader"
-                    writer="stockInfoListWriter" commit-interval="1"
-                    processor="addMonthRsltProcessor">
-                </batch:chunk>
-            </batch:tasklet>
-        </batch:step>
+    <batch:job id="StockInfoUpdateWeekJob">
+        <batch:step id="StockInfoUpdateWeekJob.setResultWeekStep"
+            parent="setResultWeekStep" />
+    </batch:job>
+
+    <batch:job id="StockInfoUpdateMonthJob">
+        <batch:step id="StockInfoUpdateMonthJob.setResultMonthStep"
+            parent="setResultMonthStep" />
+    </batch:job>
+
+    <batch:job id="StockInfoUpdateJob">
+
+        <batch:flow id="StockInfoUpdateJob.stockInfoUpdateJobFlow"
+            parent="stockInfoUpdateFlow" />
+
+    </batch:job>
+
+
+    <batch:job id="StockInfoReUpdateDayJob">
+        <batch:step id="StockInfoReUpdateDayJob.reSetResultDayStep"
+            parent="reSetResultDayStep" />
+    </batch:job>
+
+    <batch:job id="StockInfoReUpdateWeekJob">
+        <batch:step id="StockInfoReUpdateWeekJob.reSetResultWeekStep"
+            parent="reSetResultWeekStep" />
+    </batch:job>
+
+    <batch:job id="StockInfoReUpdateMonthJob">
+        <batch:step id="StockInfoReUpdateMonthJob.setResultMonthStep"
+            parent="setResultMonthStep" />
+    </batch:job>
+
+    <batch:job id="StockInfoReUpdateJob">
+        <batch:flow id="StockInfoReUpdateJob.stockInfoReUpdateJobFlow"
+            parent="stockInfoReUpdateFlow" />
+    </batch:job>
+
+
+
+    <!--FLOWS -->
+
+
+    <batch:flow id="stockInfoUpdateFlow">
+
+        <batch:step id="stockInfoUpdateFlow.setResultStep"
+            parent="setResultStep" next="stockInfoUpdateFlow.setResultDayStep" />
+        <batch:step id="stockInfoUpdateFlow.setResultDayStep"
+            parent="setResultDayStep" next="stockInfoUpdateFlow.setResultWeekStep" />
+        <batch:step id="stockInfoUpdateFlow.setResultWeekStep"
+            parent="setResultWeekStep" next="stockInfoUpdateFlow.setResultMonthStep" />
+        <batch:step id="stockInfoUpdateFlow.setResultMonthStep"
+            parent="setResultMonthStep" />
+
     </batch:flow>
 
+    <batch:flow id="stockInfoReUpdateFlow">
 
-    <!--ここからはまだだめ -->
+        <batch:step id="stockInfoUpdateFlow.reSetResultStep"
+            parent="reSetResultStep" next="stockInfoUpdateFlow.reSetResultDayStep" />
+        <batch:step id="stockInfoUpdateFlow.reSetResultDayStep"
+            parent="reSetResultDayStep" next="stockInfoUpdateFlow.reSetResultWeekStep" />
+        <batch:step id="stockInfoUpdateFlow.reSetResultWeekStep"
+            parent="reSetResultWeekStep" next="stockInfoUpdateFlow.reSetResultMonthStep" />
+        <batch:step id="stockInfoUpdateFlow.reSetResultMonthStep"
+            parent="reSetResultMonthStep" />
+    </batch:flow>
 
-    <batch:job id="stockInfoReUpdateJob">
-        <batch:step id="reSetResultStep">
-            <batch:tasklet transaction-manager="transactionManager"
-                start-limit="100">
-                <batch:chunk reader="reNonResultStockInfoReader"
-                    writer="stockInfoWriter" commit-interval="1"
-                    processor="addDayRsltProcessor">
-                </batch:chunk>
-            </batch:tasklet>
-        </batch:step>
-    </batch:job>
+    <!--STEPS -->
 
-    <!--ここまではまだだめ -->
 
-    <batch:job id="predictJob">
-        <batch:step id="predictStep">
-            <batch:tasklet ref="predictStockInfoTask" />
-            <batch:end on="*" />
-        </batch:step>
-    </batch:job>
+    <batch:step id="setResultStep">
+        <batch:tasklet transaction-manager="transactionManager"
+            start-limit="100">
+            <batch:chunk reader="nonResultStockInfoReader"
+                writer="stockInfoListWriter" commit-interval="1"
+                processor="addRsltProcessor">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+
+    <batch:step id="setResultDayStep">
+        <batch:tasklet transaction-manager="transactionManager"
+            start-limit="100">
+            <batch:chunk reader="nonDayResultStockInfoReader"
+                writer="stockInfoListWriter" commit-interval="1"
+                processor="addDayRsltProcessor">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+
+    <batch:step id="setResultWeekStep">
+        <batch:tasklet transaction-manager="transactionManager"
+            start-limit="100">
+            <batch:chunk reader="nonWeekResultStockInfoReader"
+                writer="stockInfoListWriter" commit-interval="1"
+                processor="addWeekRsltProcessor">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+
+    <batch:step id="setResultMonthStep">
+        <batch:tasklet transaction-manager="transactionManager"
+            start-limit="100">
+            <batch:chunk reader="nonMonthResultStockInfoReader"
+                writer="stockInfoListWriter" commit-interval="1"
+                processor="addMonthRsltProcessor">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+
+
+    <batch:step id="reSetResultStep">
+        <batch:tasklet transaction-manager="transactionManager"
+            start-limit="100">
+            <batch:chunk reader="reNonResultStockInfoReader"
+                writer="stockInfoListWriter" commit-interval="1"
+                processor="addRsltProcessor">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+
+    <batch:step id="reSetResultDayStep">
+        <batch:tasklet transaction-manager="transactionManager"
+            start-limit="100">
+            <batch:chunk reader="reNonDayResultStockInfoReader"
+                writer="stockInfoListWriter" commit-interval="1"
+                processor="addDayRsltProcessor">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    <batch:step id="reSetResultWeekStep">
+        <batch:tasklet transaction-manager="transactionManager"
+            start-limit="100">
+            <batch:chunk reader="reNonWeekResultStockInfoReader"
+                writer="stockInfoListWriter" commit-interval="1"
+                processor="addWeekRsltProcessor">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+    <batch:step id="reSetResultMonthStep">
+        <batch:tasklet transaction-manager="transactionManager"
+            start-limit="100">
+            <batch:chunk reader="reNonMonthResultStockInfoReader"
+                writer="stockInfoListWriter" commit-interval="1"
+                processor="addMonthRsltProcessor">
+            </batch:chunk>
+        </batch:tasklet>
+    </batch:step>
+
+    <!--OTHERS -->
 
 
     <beans:bean id="getStockInfoTask"
         class="com.ciservice.app.batch.tasklet.StockInfoTask" />
 
-    <beans:bean id="predictStockInfoTask"
-        class="com.ciservice.app.batch.tasklet.StockInfoWithPredictTask" />
 
     <beans:bean id="multiResourceReader"
         class="org.springframework.batch.item.file.MultiResourceItemReader">
@@ -192,5 +250,20 @@
         </beans:property>
 
     </beans:bean>
+
+
+
+    <!-- 使用しない -->
+    <!-- <batch:job id="predictJob"> -->
+    <!-- <batch:step id="predictStep"> -->
+    <!-- <batch:tasklet ref="predictStockInfoTask" /> -->
+    <!-- <batch:end on="*" /> -->
+    <!-- </batch:step> -->
+    <!-- </batch:job> -->
+
+    <!-- 使用しない -->
+    <!-- <beans:bean id="predictStockInfoTask" -->
+    <!-- class="com.ciservice.app.batch.tasklet.StockInfoWithPredictTask"
+        /> -->
 
 </beans>

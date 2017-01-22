@@ -17,29 +17,50 @@ import com.ciservice.app.common.db.mongodb.doc.StockInfo;
 @Repository
 public interface StockInfoRepository extends MongoRepository<StockInfo, Long> {
 
-  // StockInfo findOneByRsltDayNullAndRsltDayChkDateNullAndFixedPriceNotNull();
 
+  StockInfo findOneByScAndSavedDate(String sc, String savedDate);
+
+
+  // stockInfoUpdate系
   Page<StockInfo> findByRsltDayNullAndRsltDayChkDateNullAndFixedPriceNotNull(Pageable pageable);
 
   Page<StockInfo> findByRsltWeekNullAndRsltWeekChkDateNullAndFixedPriceNotNull(Pageable pageable);
 
-  StockInfo findOneByRsltDayChkDateBefore(Date rsltDayChkDate);
-
-  StockInfo findOneByScAndSavedDate(String sc, String savedDate);
-
-  /**
-   * @param pageable
-   * @return Page of StockInfo
-   */
   Page<StockInfo> findByRsltMonthNullAndRsltMonthChkDateNullAndFixedPriceNotNull(Pageable pageable);
 
-  /**
-   * @param pageable
-   * @return Page of StockInfo
-   */
   // CHECKSTYLE:OFF
   Page<StockInfo> findByRsltDayNullAndRsltDayChkDateNullAndRsltWeekNullAndRsltWeekChkDateNullAndRsltMonthNullAndRsltMonthChkDateNullAndFixedPriceNotNull(
       Pageable pageable);
   // CHECKSTYLE:ON
+
+  // stockInfoReUpdate系
+  Page<StockInfo> findByRsltDayChkDateBefore(Pageable pageable, Date rsltDayChkDate);
+
+  Page<StockInfo> findByRsltWeekChkDateBefore(Pageable pageable, Date rsltWeekChkDate);
+
+  Page<StockInfo> findByRsltMonthChkDateBefore(Pageable pageable, Date rsltMonthChkDate);
+
+  Page<StockInfo> findByRsltDayChkDateBeforeAndRsltWeekChkDateBeforeAndRsltMonthChkDateBefore(
+      Pageable pageable, Date rsltDayChkDate, Date rsltWeekChkDate, Date rsltMonthChkDate);
+
+  // CountSet系
+  /*
+   * Page<StockInfo> findByLearnCountDayNull(Pageable pageable);
+   *
+   * Page<StockInfo> findByLearnCountWeekNull(Pageable pageable);
+   *
+   * Page<StockInfo> findByLearnCountMonthNull(Pageable pageable);
+   *
+   * Page<StockInfo> findByLearnCountDayNullAndLearnCountWeekNullAndLearnCountMonthNull( Pageable
+   * pageable);
+   */
+
+
+  // アーカイブ済み
+
+  // StockInfo findOneByRsltDayNullAndRsltDayChkDateNullAndFixedPriceNotNull();
+
+  // StockInfo findOneByRsltDayChkDateBefore(Date rsltDayChkDate);
+
 
 }

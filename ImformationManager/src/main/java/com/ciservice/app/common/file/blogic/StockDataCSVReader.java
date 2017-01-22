@@ -84,7 +84,9 @@ public class StockDataCSVReader implements CSVFileReader<StockDataDTO> {
       if (fieldSet != null) {
         try {
           final StockDataDTO stockDataDTO = fileMapper.mapFieldSet(fieldSet);
-          stockDataDTOs.add(stockDataDTO);
+          if (stockDataDTO != null) {
+            stockDataDTOs.add(stockDataDTO);
+          }
         } catch (BindException bindException) {
           throw new SystemErrorException("マッピング不正（StockData）", bindException);
         }

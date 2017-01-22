@@ -3,7 +3,6 @@ package com.ciservice.app.common.exception;
 import org.apache.log4j.Logger;
 
 public class SystemErrorException extends RuntimeException {
-  @SuppressWarnings("unused")
   private static final Logger LOG = Logger.getLogger(SystemErrorException.class);
 
   /**
@@ -23,6 +22,7 @@ public class SystemErrorException extends RuntimeException {
    */
   public SystemErrorException(final String message) {
     super(message);
+    LOG.error(message);
   }
 
   /**
@@ -39,6 +39,7 @@ public class SystemErrorException extends RuntimeException {
    */
   public SystemErrorException(final String message, final Throwable cause) {
     super(message, cause);
+    LOG.error(message, cause);
   }
 
   /**
@@ -54,6 +55,7 @@ public class SystemErrorException extends RuntimeException {
    */
   public SystemErrorException(final Throwable cause) {
     super(cause);
+    LOG.error(cause);
   }
 
   /**
@@ -71,6 +73,7 @@ public class SystemErrorException extends RuntimeException {
   protected SystemErrorException(final String message, final Throwable cause,
       final boolean enableSuppression, final boolean writableStackTrace) {
     super(message, cause, enableSuppression, writableStackTrace);
+    LOG.error(message, cause);
   }
 
 }
