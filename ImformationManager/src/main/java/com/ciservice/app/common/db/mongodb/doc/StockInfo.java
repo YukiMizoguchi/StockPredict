@@ -56,9 +56,6 @@ public class StockInfo {
   private Date rsltWeekChkDate;
   private PredictResult rsltMonth;
   private Date rsltMonthChkDate;
-  private PredictResult predictDay;
-  private PredictResult predictWeek;
-  private PredictResult predictMonth;
 
   /**
    * @return id
@@ -605,48 +602,6 @@ public class StockInfo {
   }
 
   /**
-   * @return predictDay
-   */
-  public PredictResult getPredictDay() {
-    return predictDay;
-  }
-
-  /**
-   * @param predictDay sets predictDay
-   */
-  public void setPredictDay(PredictResult predictDay) {
-    this.predictDay = predictDay;
-  }
-
-  /**
-   * @return predictWeek
-   */
-  public PredictResult getPredictWeek() {
-    return predictWeek;
-  }
-
-  /**
-   * @param predictWeek sets predictWeek
-   */
-  public void setPredictWeek(PredictResult predictWeek) {
-    this.predictWeek = predictWeek;
-  }
-
-  /**
-   * @return predictMonth
-   */
-  public PredictResult getPredictMonth() {
-    return predictMonth;
-  }
-
-  /**
-   * @param predictMonth sets predictMonth
-   */
-  public void setPredictMonth(PredictResult predictMonth) {
-    this.predictMonth = predictMonth;
-  }
-
-  /**
    * @see java.lang.Object#toString()
    * @return
    */
@@ -664,8 +619,7 @@ public class StockInfo {
         + shareUnit + ", highDate=" + highDate + ", highPriceYear=" + highPriceYear + ", lowDate="
         + lowDate + ", lowPriceYear=" + lowPriceYear + ", rsltDay=" + rsltDay + ", rsltDayChkDate="
         + rsltDayChkDate + ", rsltWeek=" + rsltWeek + ", rsltWeekChkDate=" + rsltWeekChkDate
-        + ", rsltMonth=" + rsltMonth + ", rsltMonthChkDate=" + rsltMonthChkDate + ", predictDay="
-        + predictDay + ", predictWeek=" + predictWeek + ", predictMonth=" + predictMonth + "]";
+        + ", rsltMonth=" + rsltMonth + ", rsltMonthChkDate=" + rsltMonthChkDate + "]";
   }
 
 }
