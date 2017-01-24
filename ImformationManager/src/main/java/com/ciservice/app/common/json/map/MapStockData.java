@@ -28,7 +28,7 @@ public class MapStockData {
 
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
 
-    for (String[] stockData : stockDataSet.aaData) {
+    for (String[] stockData : stockDataSet.japanAllStockData) {
 
       final StockDataDTO stockDataDTO = new StockDataDTO();
       stockDataDTO.setSc(stockData[0]);

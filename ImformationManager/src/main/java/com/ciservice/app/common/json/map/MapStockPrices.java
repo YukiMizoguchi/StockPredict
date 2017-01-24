@@ -34,7 +34,7 @@ public class MapStockPrices {
     final SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm");
     final SimpleDateFormat sdfSaved = new SimpleDateFormat("yyyyMMdd");
 
-    for (String[] stockPrice : stockPriceSet.aaData) {
+    for (String[] stockPrice : stockPriceSet.japanAllAtockPrices) {
 
       final StockPriceDTO stockPriceDTO = new StockPriceDTO();
       stockPriceDTO.setSc(stockPrice[0]);
